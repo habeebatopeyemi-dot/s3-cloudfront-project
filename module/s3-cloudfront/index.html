@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Application Form</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background-color: #f4f7f6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .form-container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 24px;
+            color: #333;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+        input[type="text"],
+        input[type="email"],
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        input:focus, select:focus {
+            border-color: #0056b3;
+            outline: none;
+        }
+        .radio-group {
+            display: flex;
+            gap: 20px;
+            padding-top: 5px;
+        }
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        .message {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 4px;
+            text-align: center;
+            display: none;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            display: block;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+<div class="form-container">
+    <h2>Application Form</h2>
+    <form id="applicationForm">
+        <div class="form-group">
+            <label for="name">Full Name</label>
+            <input type="text" id="name" required placeholder="John Doe">
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" required placeholder="johndoe@example.com">
+        </div>
+
+        <div class="form-group">
+            <label>Gender</label>
+            <div class="radio-group">
+                <label class="radio-option">
+                    <input type="radio" name="gender" value="Male" required> Male
+                </label>
+                <label class="radio-option">
+                    <input type="radio" name="gender" value="Female"> Female
+                </label>
+                <label class="radio-option">
+                    <input type="radio" name="gender" value="Other"> Other
+                </label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="qualification">Academic Qualification</label>
+            <select id="qualification" required>
+                <option value="" disabled selected>Select your highest qualification</option>
+                <option value="High School">High School Diploma</option>
+                <option value="Associate Degree">Associate Degree</option>
+                <option value="Bachelor's Degree">Bachelor's Degree</option>
+                <option value="Master's Degree">Master's Degree</option>
+                <option value="PhD">PhD / Doctorate</option>
+            </select>
+        </div>
+
+        <button type="submit" id="submitBtn">Submit Application</button>
+    </form>
+
+    <div id="responseMessage" class="message"></div>
+</div>
+
+<script>
+    
+    const API_URL = "https://e7bou60515.execute-api.eu-north-1.amazonaws.com/dev/submit";
+
+    document.getElementById('applicationForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const submitBtn = document.getElementById('submitBtn');
+        const messageBox = document.getElementById('responseMessage');
+        
+        submitBtn.disabled = true;
+        submitBtn.innerText = "Submitting...";
+        messageBox.className = "message";
+        messageBox.style.display = "none";
+
+        const formData = {
+            name: document.getElementById('name').value,
+            email: document.getElementById('email').value,
+            gender: document.querySelector('input[name="gender"]:checked').value,
+            qualification: document.getElementById('qualification').value
+        };
+
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                messageBox.innerText = "Success! " + result.message;
+                messageBox.classList.add('success');
+                document.getElementById('applicationForm').reset(); 
+            } else {
+                messageBox.innerText = "Error: " + (result.message || "Something went wrong.");
+                messageBox.classList.add('error');
+            }
+        } catch (error) {
+            console.error("Submission error:", error);
+            messageBox.innerText = "Could not connect to the server. Please try again later.";
+            messageBox.classList.add('error');
+        } finally {
+    
+            submitBtn.disabled = false;
+            submitBtn.innerText = "Submit Application";
+        }
+    });
+</script>
+
+</body>
+</html>
