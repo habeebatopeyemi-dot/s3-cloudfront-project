@@ -26,8 +26,11 @@ Method 2: Deploying via Terraform (with terraform code)
 8. Create an output.tf file to output the website endpoint for the static website URL
 9. Deploy with:
    i.   terraform init
+   
    ii.  terraform plan
+   
    iii. terraform apply
+   
    iv.  terraform destroy (optional)
 
 #    PROJECT 2
@@ -61,7 +64,10 @@ Method 2: Deploying via Terraform (with terraform code)
 9. Create an output.tf file to output the cloudfront URL for the live website  
 10. Deploy with:
    i.   terraform init
+
    ii.  terraform plan
+   
    iii. terraform apply
+   
    iv.  terraform destroy (optional)
              
